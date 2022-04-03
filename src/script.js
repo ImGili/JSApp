@@ -3,6 +3,13 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 
+import osg from 'osg-serializer-browser'
+var filePath = './Samples/Tile_+000_+013.osgb'
+fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
+    var osgObj = osg.readBuffer(abuf, filePath)
+    console.log(`PagedLOD`,osgObj);
+})
+
 // Debug
 const gui = new dat.GUI()
 
