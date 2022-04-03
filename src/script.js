@@ -3,11 +3,30 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 
-import osg from 'osg-serializer-browser'
-var filePath = './Samples/Tile_+000_+013.osgb'
+import osg from 'osg-serializer-browser';
+var filePath = './Samples/Tile_+000_+013.osgb';
+
+var osgeom = new THREE.BufferGeometry();
+var osgmaterial = new THREE.MeshLambertMaterial({
+    color: 0x0000ff, //三角面颜色
+    side: THREE.DoubleSide //两面可见
+  }); //材质对象
+var osgmesh = new THREE.Mesh(osgeom, osgmaterial);
 fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
     var osgObj = osg.readBuffer(abuf, filePath)
-    console.log(`PagedLOD`,osgObj);
+    var osgGeometry = osgObj.Children[0].Children[0];
+    var osgVertexArray = new Float32Array(osgGeometry.VertexArray.flat());
+    var osgIndexArray = new Uint16Array(osgGeometry.PrimitiveSetList[0].data.flat());
+    // console.log(`PagedLOD`,osgObj);
+    // console.log(`osgGeometry`,osgGeometry);
+    // console.log(`osgVertexArray`,osgVertexArray);
+    // console.log(`osgIndexArray`,osgIndexArray);
+    // console.log(`positions`,positions);
+    // console.log(`osgIndexArray`,osgIndexArray);
+    osgeom.attributes.position = new THREE.BufferAttribute(osgVertexArray, 3);
+    osgeom.index = new THREE.BufferAttribute(osgIndexArray, 1);
+    console.log("osgeom", osgeom);
+    console.log("osgmesh", osgmesh);
 })
 
 // Debug
@@ -30,6 +49,7 @@ material.color = new THREE.Color(0xff0000)
 // Mesh
 const sphere = new THREE.Mesh(geometry,material)
 scene.add(sphere)
+scene.add(osgmesh)
 
 // Lights
 
