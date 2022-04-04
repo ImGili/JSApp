@@ -7,7 +7,7 @@ import osg from 'osg-serializer-browser';
 var filePath = './Samples/Tile_+000_+013.osgb';
 
 var osgeom = new THREE.BufferGeometry();
-var osgmaterial = new THREE.MeshPhongMaterial();
+var osgmaterial = new THREE.MeshBasicMaterial();
     // color: 0xff0000,
     // specular:0x444444,//高光部分的颜色
     // shininess:20,//高光部分的亮度，默认30
@@ -48,16 +48,19 @@ fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
     var mimeType = isPNG ? 'image/png' : 'image/jpeg';
     console.log(mimeType);
     var imageUri = new Blob([osgImage.Data], { type: mimeType });
+    console.log('imageUri',imageUri);
     imageUri = URL.createObjectURL(imageUri)
+    console.log('imageUri',imageUri);
 
     var texture = new THREE.TextureLoader().load(imageUri, () => {
         osgmaterial.map = texture;
+        console.log("osgmaterial", osgmaterial);
         texture.needsUpdate = true
     })
-    console.log("imageUri", imageUri);
-    console.log("texture", texture);
+    // console.log("imageUri", imageUri);
+    // console.log("texture", texture);
     // osgmesh.scale.set(0.1, 0.1, 0.1);
-    console.log("osgeom", osgeom);
+    // console.log("osgeom", osgeom);
     // console.log("osgmesh", osgmesh);
 })
 // Debug
