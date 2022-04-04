@@ -6,14 +6,22 @@ import * as dat from 'dat.gui'
 import osg from 'osg-serializer-browser';
 var filePath = './Samples/Tile_+000_+013.osgb';
 
-var osgeom = new THREE.BufferGeometry();
-var osgmaterial = new THREE.MeshBasicMaterial();
+
+// Debug
+const gui = new dat.GUI()
+
+// Canvas
+const canvas = document.querySelector('canvas.webgl')
+
+// Scene
+const scene = new THREE.Scene()
+
     // color: 0xff0000,
     // specular:0x444444,//高光部分的颜色
     // shininess:20,//高光部分的亮度，默认30
 // osgmaterial.color = new THREE.Color(0x00ff00);
-var osgmesh = new THREE.Mesh(osgeom, osgmaterial);
 fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
+    var osgeom = new THREE.BufferGeometry();
     var osgObj = osg.readBuffer(abuf, filePath)
     var osgGeometry = osgObj.Children[0].Children[0];
     var osgVertexArray = new Float32Array(osgGeometry.VertexArray.flat());
@@ -35,8 +43,6 @@ fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
     osgeom.computeBoundingBox();
     osgeom.computeBoundingSphere();
     osgeom.computeVertexNormals();
-    var center = osgeom.boundingSphere.center;
-    osgmesh.position.set(-center.x, -center.y, -center.z);
 
     var osgStateSet = osgGeometry.StateSet;
     var osgImage = osgStateSet.TextureAttributeList[0].value.StateAttribute.Image
@@ -49,13 +55,17 @@ fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
     console.log(mimeType);
     var imageUri = new Blob([osgImage.Data], { type: mimeType });
     console.log('imageUri',imageUri);
-    imageUri = URL.createObjectURL(imageUri)
+    var imageU = URL.createObjectURL(imageUri);
     console.log('imageUri',imageUri);
-
-    var texture = new THREE.TextureLoader().load(imageUri, () => {
-        osgmaterial.map = texture;
+    var center = osgeom.boundingSphere.center;
+    var texture = new THREE.TextureLoader().load(imageU, () => {
+        var osgmaterial = new THREE.MeshBasicMaterial({ map: texture, });
+        // osgmaterial.map = texture;
         console.log("osgmaterial", osgmaterial);
-        texture.needsUpdate = true
+        texture.needsUpdate = true;
+        var osgmesh = new THREE.Mesh(osgeom, osgmaterial);
+        osgmesh.position.set(-center.x, -center.y, -center.z);
+        scene.add(osgmesh);
     })
     // console.log("imageUri", imageUri);
     // console.log("texture", texture);
@@ -63,14 +73,7 @@ fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
     // console.log("osgeom", osgeom);
     // console.log("osgmesh", osgmesh);
 })
-// Debug
-const gui = new dat.GUI()
 
-// Canvas
-const canvas = document.querySelector('canvas.webgl')
-
-// Scene
-const scene = new THREE.Scene()
 
 // Objects
 const geometry = new THREE.TorusGeometry(.7, .2, 16, 100);
@@ -84,7 +87,7 @@ material.color = new THREE.Color(0xff0000)
 const sphere = new THREE.Mesh(geometry, material)
 scene.add(sphere)
 console.log(sphere);
-scene.add(osgmesh)
+// scene.add(osgmesh)
 
 // Lights
 
