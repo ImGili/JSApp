@@ -7,11 +7,10 @@ import osg from 'osg-serializer-browser';
 var filePath = './Samples/Tile_+000_+013.osgb';
 
 var osgeom = new THREE.BufferGeometry();
-var osgmaterial = new THREE.MeshPhongMaterial({
+var osgmaterial = new THREE.MeshPhongMaterial();
     // color: 0xff0000,
     // specular:0x444444,//高光部分的颜色
     // shininess:20,//高光部分的亮度，默认30
-});
 // osgmaterial.color = new THREE.Color(0x00ff00);
 var osgmesh = new THREE.Mesh(osgeom, osgmaterial);
 fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
@@ -21,7 +20,7 @@ fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
     var osgIndexArray = new Uint16Array(osgGeometry.PrimitiveSetList[0].data.flat());
     var osgTextureImage = osgGeometry.StateSet.TextureAttributeList[0].value.StateAttribute.Image.Data;
     console.log(`PagedLOD`, osgObj);
-    // console.log(`osgGeometry`,osgGeometry);
+    console.log(`osgGeometry`,osgGeometry);
     // console.log(`osgVertexArray`,osgVertexArray);
     // console.log(`osgIndexArray`,osgIndexArray);
     // console.log(`positions`,positions);
@@ -29,6 +28,10 @@ fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
     console.log(`osgTextureImage`, osgTextureImage);
     osgeom.attributes.position = new THREE.BufferAttribute(osgVertexArray, 3);
     osgeom.index = new THREE.BufferAttribute(osgIndexArray, 1);
+    var uvs = new Float32Array(osgGeometry.TexCoordArray[0].flat());
+    osgeom.attributes.uv = new THREE.BufferAttribute(uvs, 2);
+    // console.log('uvs', uvs); 
+    // osgeom.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     osgeom.computeBoundingBox();
     osgeom.computeBoundingSphere();
     osgeom.computeVertexNormals();
@@ -48,13 +51,13 @@ fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
     imageUri = URL.createObjectURL(imageUri)
 
     var texture = new THREE.TextureLoader().load(imageUri, () => {
+        osgmaterial.map = texture;
         texture.needsUpdate = true
     })
-    osgmaterial.map = texture;
-    // console.log("imageUri", imageUri);
-    // console.log("texture", texture);
+    console.log("imageUri", imageUri);
+    console.log("texture", texture);
     // osgmesh.scale.set(0.1, 0.1, 0.1);
-    // console.log("osgeom", osgeom);
+    console.log("osgeom", osgeom);
     // console.log("osgmesh", osgmesh);
 })
 // Debug
