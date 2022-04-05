@@ -127,7 +127,7 @@ class ThreeComponent extends Component {
         const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1000)
         camera.position.x = 0
         camera.position.y = 0
-        camera.position.z = 2
+        camera.position.z = 10
         scene.add(camera)
 
         // Controls
