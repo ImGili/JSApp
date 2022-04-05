@@ -15,7 +15,7 @@ class ThreeComponent extends Component {
 
     initThree() {
 
-        var filePath = './Samples/Tile_+000_+013.osgb';
+        var filePath = './Samples/test.osgb';
 
         // Debug
         const gui = new dat.GUI()
@@ -33,7 +33,7 @@ class ThreeComponent extends Component {
         fetch(filePath).then(res => { return res.arrayBuffer() }).then(abuf => {
             var osgeom = new THREE.BufferGeometry();
             var osgObj = osg.readBuffer(abuf, filePath)
-            var osgGeometry = osgObj.Children[0].Children[0];
+            var osgGeometry = osgObj.Children[0].Children[0].Children[0];
             var osgVertexArray = new Float32Array(osgGeometry.VertexArray.flat());
             var osgIndexArray = new Uint16Array(osgGeometry.PrimitiveSetList[0].data.flat());
             var osgTextureImage = osgGeometry.StateSet.TextureAttributeList[0].value.StateAttribute.Image.Data;
@@ -86,7 +86,7 @@ class ThreeComponent extends Component {
 
         // Mesh
         const sphere = new THREE.Mesh(geometry, material)
-        scene.add(sphere)
+        // scene.add(sphere)
         console.log(sphere);
         // scene.add(osgmesh)
 
